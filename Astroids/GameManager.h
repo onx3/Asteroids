@@ -29,11 +29,30 @@ public:
 
 	void CheckCollisionRecursive(GameObject * root, GameObject * pPlayer);
 
-	template <typename T>
-	void AddManager();
+	//------------------------------------------------------------------------------------------------------------------------
 
 	template <typename T>
-	T * GetManager();
+	void AddManager()
+	{
+		static_assert(std::is_base_of<BaseManager, T>::value, "T must inherit from BaseManager");
+		if (mManagers.find(typeid(T)) == mManagers.end())
+		{
+			mManagers[typeid(T)] = new T(this);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------------------------------
+
+	template <typename T>
+	T * GetManager()
+	{
+		auto it = mManagers.find(typeid(T));
+		if (it != mManagers.end())
+		{
+			return dynamic_cast<T *>(it->second);
+		}
+		return nullptr;
+	}
 
 	GameObject * CreateNewGameObject(ETeam team, GameObject * pParent);
 

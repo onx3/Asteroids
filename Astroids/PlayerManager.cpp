@@ -77,7 +77,7 @@ void PlayerManager::InitPlayer()
         auto pHealthComponent = pPlayer->GetComponent<HealthComponent>().lock();
         if (!pHealthComponent)
         {
-            pPlayer->AddComponent(std::make_shared<HealthComponent>(pPlayer, 102220, 102220, 3, 3, 2.f));
+            pPlayer->AddComponent(std::make_shared<HealthComponent>(pPlayer, 100, 100, 3, 3, 2.f));
         }
     }
 

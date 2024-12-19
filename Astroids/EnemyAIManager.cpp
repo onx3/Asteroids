@@ -7,6 +7,7 @@
 #include "HealthComponent.h"
 #include "RandomMovementComponent.h"
 #include "ExplosionComponent.h"
+#include "DropComponent.h"
 
 EnemyAIManager::EnemyAIManager(GameManager * pGameManager)
 	: BaseManager(pGameManager)
@@ -123,15 +124,24 @@ void EnemyAIManager::AddEnemies(int count, EEnemy type, sf::Vector2f pos)
             pSpriteComp->SetPosition(pos);
             pEnemy->AddComponent(pSpriteComp);
 
-            // Add random movement AFTER smooth intro
+            // Movement Component
             auto pRandomMovementComp = std::make_shared<RandomMovementComponent>(pEnemy);
             pEnemy->AddComponent(pRandomMovementComp);
-
+            
+            // Health Component
             auto pHealthComponent = std::make_shared<HealthComponent>(pEnemy, 10, 100, 1, 1);
             pEnemy->AddComponent(pHealthComponent);
 
+            // Collision Component
             auto pCollisionComp = std::make_shared<CollisionComponent>(pEnemy, pEnemy->GetSize());
             pEnemy->AddComponent(pCollisionComp);
+
+            // Drop Component
+            auto pDropComponent = std::make_shared<DropComponent>(pEnemy);
+            pDropComponent->SetDropTable({
+                {EDrops::Health, 0.3f},  // 30% chance to drop Health
+                {EDrops::Nuke, 0.1f} });
+            pEnemy->AddComponent(pDropComponent);
         }
     }
 }
@@ -197,9 +207,16 @@ void EnemyAIManager::OnDeath(GameObject * pEnemy)
     // Add the explosion animation here
     if (!pEnemy->GetComponent<ExplosionComponent>().lock())
     {
-        auto explosionComp = std::make_shared<ExplosionComponent>(
+        auto pExplosionComp = std::make_shared<ExplosionComponent>(
             pEnemy, "Art/explosion.png", 32, 32, 7, 0.1f);
-        pEnemy->AddComponent(explosionComp);
+        pEnemy->AddComponent(pExplosionComp);
+    }
+
+    // Drop
+    auto pDropComp = pEnemy->GetComponent<DropComponent>().lock();
+    if (pDropComp)
+    {
+        pDropComp->NotifyDropManagerOnDeath(pEnemy->GetPosition());
     }
 }
 

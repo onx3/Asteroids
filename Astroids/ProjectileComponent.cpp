@@ -218,8 +218,8 @@ void ProjectileComponent::CheckCollisionsForProjectile(GameObject* root, Project
                     pHealthComponent->LooseHealth(projectile.damage);
 
                     // Award score if owner is the player
-                    auto* pPlayerManager = mpOwner->GetGameManager().GetManager<PlayerManager>();
-                    auto* pPlayer = pPlayerManager ? pPlayerManager->GetPlayers()[0] : nullptr;
+                    auto * pPlayerManager = mpOwner->GetGameManager().GetManager<PlayerManager>();
+                    auto * pPlayer = pPlayerManager ? pPlayerManager->GetPlayers()[0] : nullptr;
 
                     if (pPlayer && mpOwner == pPlayer)
                     {

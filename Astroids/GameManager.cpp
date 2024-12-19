@@ -10,6 +10,7 @@
 #include "CollisionComponent.h"
 #include "HealthComponent.h"
 #include "PlayerManager.h"
+#include "DropManager.h"
 
 GameManager::GameManager(WindowManager & windowManager)
     : mWindowManager(windowManager)
@@ -33,6 +34,7 @@ GameManager::GameManager(WindowManager & windowManager)
     AddManager<PlayerManager>();
     AddManager<EnemyAIManager>();
     AddManager<ScoreManager>();
+    AddManager<DropManager>();
 
     // Game Audio
     {
@@ -336,31 +338,6 @@ void GameManager::CheckCollisionRecursive(GameObject * pRoot, GameObject * pPlay
     {
         CheckCollisionRecursive(child, pPlayer);
     }
-}
-
-//------------------------------------------------------------------------------------------------------------------------
-
-template <typename T>
-void GameManager::AddManager()
-{
-    static_assert(std::is_base_of<BaseManager, T>::value, "T must inherit from BaseManager");
-    if (mManagers.find(typeid(T)) == mManagers.end())
-    {
-        mManagers[typeid(T)] = new T(this);
-    }
-}
-
-//------------------------------------------------------------------------------------------------------------------------
-
-template <typename T>
-T * GameManager::GetManager()
-{
-    auto it = mManagers.find(typeid(T));
-    if (it != mManagers.end())
-    {
-        return dynamic_cast<T *>(it->second);
-    }
-    return nullptr;
 }
 
 //------------------------------------------------------------------------------------------------------------------------
